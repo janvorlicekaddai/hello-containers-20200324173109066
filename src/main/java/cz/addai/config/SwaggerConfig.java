@@ -1,4 +1,4 @@
-package cz.adai.config;
+package cz.addai.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

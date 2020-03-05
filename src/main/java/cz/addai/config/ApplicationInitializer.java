@@ -1,4 +1,4 @@
-package cz.adai.config;
+package cz.addai.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +22,9 @@ public class ApplicationInitializer implements WebApplicationInitializer {
     public void onStartup(ServletContext container) {
 
         logger.info("Initializing ADAM API application");
+
+        var url = getClass().getClassLoader().getResource("/logback.xml");
+        logger.info("URL: {}", url);
 
         // Create the 'root' Spring application context
         AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();

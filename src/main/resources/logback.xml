@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    This is the default development configuration.
+-->
+<configuration packagingData="true">
+
+    <!-- uses classpath when resource, when file direct to file -->
+    <property resource="application.properties" />
+
+    <property scope="context" name="logdir" value="${adam.logging.target-dir:-${logging.target-dir:-./log/}}"/>
+
+    <property name="pattern"
+              value="%date{yyyy-MM-dd HH:mm:ss.SSSXXX} %5level [%thread] %logger{80} rId:%X{requestId} uId:%X{userId} ip:%X{ip}: %message%n"/>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${pattern}</pattern>
+        </encoder>
+    </appender>
+
+    <!--
+        All purposes log.
+    -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logdir}/logs/adam.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${logdir}/adam.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <!-- Days to keep history at max 3gb size-->
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>3GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${pattern}</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="com.sun">
+        <level value="INFO"/>
+    </logger>
+
+    <logger name="org.apache.http">
+        <level value="INFO"/>
+    </logger>
+
+    <logger name="cz.addai">
+        <level value="DEBUG"/>
+    </logger>
+
+    <logger name="org.springframework">
+        <level value="INFO"/>
+    </logger>
+
+    <logger name="org.springframework.ws.client.MessageTracing.sent">
+        <level value="TRACE"/>
+    </logger>
+
+    <logger name="org.springframework.ws.client.MessageTracing.received">
+        <level value="TRACE"/>
+    </logger>
+
+    <root>
+        <level value="INFO"/>
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+</configuration>

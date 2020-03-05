@@ -1,6 +1,6 @@
-package cz.adai.components;
+package cz.addai.components;
 
-import cz.adai.config.AdamEnvironment;
+import cz.addai.config.AdamEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -124,5 +124,20 @@ public class AdamConfig implements InitializingBean {
 
     public int getRestPoolMaxPerRoute() {
         return Integer.parseInt(getProperty("be.rest.pool.maxPerRoute"));
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Watson
+
+    public String getWatsonUrl() {
+        return getProperty("watson.url");
+    }
+
+    public String getWatsonAssistantId() {
+        return getProperty("watson.assistantId");
+    }
+
+    public String getWatsonApiKey() {
+        return getProperty("watson.apiKey");
     }
 }

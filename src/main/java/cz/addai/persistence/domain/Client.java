@@ -1,4 +1,4 @@
-package cz.adai.persistence.domain;
+package cz.addai.persistence.domain;
 
 import javax.persistence.*;
 import java.io.Serializable;

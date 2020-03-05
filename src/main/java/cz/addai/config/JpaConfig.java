@@ -1,6 +1,6 @@
-package cz.adai.config;
+package cz.addai.config;
 
-import cz.adai.components.AdamConfig;
+import cz.addai.components.AdamConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -33,8 +33,8 @@ public class JpaConfig {
         LocalContainerEntityManagerFactoryBean em
                 = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource());
-        // User array if needed: new String[] { "cz.adai.persistence.domain" }
-        em.setPackagesToScan("cz.adai.persistence.domain");
+        // User array if needed: new String[] { "cz.addai.persistence.domain" }
+        em.setPackagesToScan("cz.addai.persistence.domain");
 
         JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);

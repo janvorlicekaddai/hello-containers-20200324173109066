@@ -1,4 +1,4 @@
-package cz.adai.config;
+package cz.addai.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.*;
@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
-@ComponentScan(basePackages = {"cz.adai.components"})
+@ComponentScan(basePackages = {"cz.addai.components"})
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableJpaRepositories
 @EnableTransactionManagement
