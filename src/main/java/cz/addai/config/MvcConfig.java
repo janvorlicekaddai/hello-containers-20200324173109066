@@ -15,9 +15,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Import(SwaggerConfig.class)
 public class MvcConfig implements WebMvcConfigurer {
 
-
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/index.html").addResourceLocations("classpath:/web/index.html");
+
         registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
         registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
     }

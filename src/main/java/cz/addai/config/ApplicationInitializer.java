@@ -20,12 +20,12 @@ public class ApplicationInitializer implements WebApplicationInitializer {
 
     @Override
     public void onStartup(ServletContext container) {
-
         logger.info("Initializing ADAM API application");
 
-        var url = getClass().getClassLoader().getResource("/logback.xml");
-        logger.info("URL: {}", url);
+        initSpring(container);
+    }
 
+    private void initSpring(ServletContext container) {
         // Create the 'root' Spring application context
         AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
         ConfigurableEnvironment env = rootContext.getEnvironment();

@@ -6,11 +6,11 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
-@ComponentScan(basePackages = {"cz.addai.components"})
+@ComponentScan(basePackages = {"cz.addai.components", "cz.addai.service"})
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableJpaRepositories
 @EnableTransactionManagement
-@Import(JpaConfig.class)
+@Import({JpaConfig.class, WatsonConfig.class})
 @PropertySources({
         @PropertySource("classpath:application.properties"),
         @PropertySource(value = "classpath:local.properties", ignoreResourceNotFound = true),
