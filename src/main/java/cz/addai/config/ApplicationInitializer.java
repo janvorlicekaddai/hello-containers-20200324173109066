@@ -1,5 +1,6 @@
 package cz.addai.config;
 
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -50,8 +51,9 @@ public class ApplicationInitializer implements WebApplicationInitializer {
         dispatcher.setLoadOnStartup(1);
         dispatcher.addMapping("/");
 
-        //Register jacksons jodatime object mapper
+        // Register jacksons jodatime object mapper
         ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         mapper.registerModule(new JodaModule());
     }
 }
