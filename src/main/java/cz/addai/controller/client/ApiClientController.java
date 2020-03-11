@@ -2,6 +2,7 @@ package cz.addai.controller.client;
 
 import cz.addai.controller.AbstractController;
 import cz.addai.controller.request.MessageRequest;
+import cz.addai.controller.response.MessageResponse;
 import cz.addai.service.WatsonMessageService;
 import cz.addai.service.WatsonSessionService;
 import io.swagger.annotations.ApiOperation;
@@ -24,7 +25,7 @@ public class ApiClientController extends AbstractController {
     private WatsonMessageService watsonMessageService;
 
     @RequestMapping(
-            value="/client/v1/deleteSession",
+            value="/public/v1/deleteSession",
             method = RequestMethod.DELETE)
     @ApiOperation(tags = {WATSON_TAG, CLIENT_TAG}, value = "Delete Watson session")
     public ResponseEntity<Object> deleteCurrentSession() {
@@ -33,12 +34,14 @@ public class ApiClientController extends AbstractController {
     }
 
     @RequestMapping(
-            value="/client/v1/sendMessage",
+            value="/public/v1/sendMessage",
             method = RequestMethod.POST,
             produces = "application/json; charset=utf-8",
             consumes = "application/json")
     @ApiOperation(tags = {WATSON_TAG, CLIENT_TAG}, value = "Send message to Watson")
-    public String sendMessage(@RequestBody MessageRequest messageRequest) {
-        return watsonMessageService.sendMessage(messageRequest);
+    public MessageResponse sendMessage(@RequestBody MessageRequest messageRequest) {
+        var watsonResponse = watsonMessageService.sendMessage(messageRequest);
+        String s = watsonResponse.toString();
+        return new MessageResponse(messageRequest.getRequestId(), s);
     }
 }

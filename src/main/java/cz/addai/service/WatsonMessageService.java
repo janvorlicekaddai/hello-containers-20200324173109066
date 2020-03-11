@@ -26,7 +26,7 @@ public class WatsonMessageService extends AbstractWatsonService {
 
     private Logger logger = LoggerFactory.getLogger(WatsonMessageService.class);
 
-    public String sendMessage(MessageRequest messageRequest) {
+    public MessageResponse sendMessage(MessageRequest messageRequest) {
         if (!userSession.hasSession()) {
             logger.debug("Request to send message but there is no session. Creating session");
             sessionService.openSession();
@@ -35,14 +35,22 @@ public class WatsonMessageService extends AbstractWatsonService {
 
         logger.debug("Sending message to Watson");
 
+        var messageContext = userSession.getMessageContext();
+        populateMessageContext(messageContext);
+
+        var inputOptions = new MessageInputOptions.Builder()
+                .returnContext(true)
+                .build();
+
         var input = new MessageInput.Builder()
                 .text(messageRequest.getText())
+                .options(inputOptions)
                 .build();
 
         var options = new MessageOptions.Builder()
                 .assistantId(adamConfig.getWatsonAssistantId())
                 .sessionId(userSession.getWatsonSessionToken())
-                .context(userSession.getMessageContext())
+                .context(messageContext)
                 .input(input)
                 .build();
 
@@ -58,9 +66,11 @@ public class WatsonMessageService extends AbstractWatsonService {
 
         // Save context to session
         var result = response.getResult();
-        userSession.setMessageContext(result.getContext());
+        messageContext = result.getContext();
+        populateMessageContext(messageContext);
+        userSession.setMessageContext(messageContext);
 
-        return result.getOutput().toString();
+        return result;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -70,6 +80,16 @@ public class WatsonMessageService extends AbstractWatsonService {
                 + response.getStatusCode() + " - " + response.getStatusMessage();
         logger.error(errorMessage);
         throw new AdamServiceException(errorMessage);
+    }
+
+    private void populateMessageContext(MessageContext messageContext) {
+        if (messageContext == null) {
+            return;
+        }
+        messageContext.skills()
+                .get("main skill")
+                .userDefined()
+                .putIfAbsent("App", "Mobile");
     }
 
 }

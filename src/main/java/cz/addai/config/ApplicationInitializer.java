@@ -1,6 +1,5 @@
 package cz.addai.config;
 
-import com.fasterxml.jackson.databind.SerializationFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -8,8 +7,6 @@ import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.joda.JodaModule;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRegistration;
@@ -50,10 +47,12 @@ public class ApplicationInitializer implements WebApplicationInitializer {
         ServletRegistration.Dynamic dispatcher = container.addServlet("dispatcher", new DispatcherServlet(dispatcherContext));
         dispatcher.setLoadOnStartup(1);
         dispatcher.addMapping("/");
-
-        // Register jacksons jodatime object mapper
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-        mapper.registerModule(new JodaModule());
+//
+//        // Register jacksons object mappers
+//        ObjectMapper mapper = JsonMapper.builder() // or different mapper for other format
+//                .addModule(new ParameterNamesModule())
+//                .addModule(new Jdk8Module())
+//                .addModule(new JavaTimeModule())
+//                .build();
     }
 }

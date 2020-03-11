@@ -6,11 +6,12 @@ import java.io.Serializable;
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
-@Table(name = "Client")
+@Table(name = "client")
 public class Client implements Serializable {
 
     private Long id;
     private String name;
+
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
