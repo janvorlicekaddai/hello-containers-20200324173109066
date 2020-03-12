@@ -1,13 +1,5 @@
-package cz.addai.controller.system;
+package cz.addai.web.controller.system;
 
-import com.ibm.cloud.sdk.core.http.ServiceCall;
-import com.ibm.watson.assistant.v2.Assistant;
-import com.ibm.watson.assistant.v2.model.CreateSessionOptions;
-import com.ibm.watson.assistant.v2.model.MessageInput;
-import com.ibm.watson.assistant.v2.model.MessageOptions;
-import com.ibm.watson.assistant.v2.model.SessionResponse;
-import com.ibm.watson.discovery.v2.Discovery;
-import cz.addai.components.AdamConfig;
 import cz.addai.service.WatsonSessionService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

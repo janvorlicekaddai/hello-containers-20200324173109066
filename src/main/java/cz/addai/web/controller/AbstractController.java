@@ -1,9 +1,9 @@
-package cz.addai.controller;
+package cz.addai.web.controller;
 
+import cz.addai.web.model.request.AbstractRequest;
+import cz.addai.web.model.response.AbstractResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.annotation.Resource;
 
 public class AbstractController {
 
@@ -16,8 +16,17 @@ public class AbstractController {
         return logger;
     }
 
+    protected void beforeProcess(AbstractRequest abstractRequest) {
+
+    }
+
+    protected void afterProcess(AbstractRequest abstractRequest, AbstractResponse abstractResponse) {
+
+    }
+
 //    protected void populateRequestContextFromRequest(AbstractRequest request) {
 //        requestContext.setRequestClientInfo(request.getClientInfo());
 //        requestContext.setRequestSessionInfo(request.getSessionInfo());
 //    }
+
 }

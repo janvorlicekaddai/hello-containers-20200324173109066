@@ -10,7 +10,7 @@
     <property scope="context" name="logdir" value="${adam.logging.target-dir:-${logging.target-dir:-./log/}}"/>
 
     <property name="pattern"
-              value="%date{yyyy-MM-dd HH:mm:ss.SSSXXX} %5level [%thread] %logger{80} rId:%X{requestId} uId:%X{userId} ip:%X{ip}: %message%n"/>
+              value="%date{yyyy-MM-dd HH:mm:ss.SSSXXX} %5level [%thread] %logger{80} rId:%X{requestId} %message%n"/>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>

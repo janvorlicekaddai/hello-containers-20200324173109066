@@ -1,4 +1,4 @@
-package cz.addai.controller.response;
+package cz.addai.web.model.response;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import io.swagger.annotations.ApiModel;

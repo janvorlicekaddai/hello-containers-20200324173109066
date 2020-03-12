@@ -1,10 +1,11 @@
-package cz.addai.controller.client;
+package cz.addai.web.controller.client;
 
-import cz.addai.controller.AbstractController;
-import cz.addai.controller.request.MessageRequest;
-import cz.addai.controller.response.MessageResponse;
+import cz.addai.aspect.AaReq;
 import cz.addai.service.WatsonMessageService;
 import cz.addai.service.WatsonSessionService;
+import cz.addai.web.controller.AbstractController;
+import cz.addai.web.model.request.MessageRequest;
+import cz.addai.web.model.response.MessageResponse;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 
 @RestController
 public class ApiClientController extends AbstractController {
@@ -38,10 +40,17 @@ public class ApiClientController extends AbstractController {
             method = RequestMethod.POST,
             produces = "application/json; charset=utf-8",
             consumes = "application/json")
-    @ApiOperation(tags = {WATSON_TAG, CLIENT_TAG}, value = "Send message to Watson")
-    public MessageResponse sendMessage(@RequestBody MessageRequest messageRequest) {
-        var watsonResponse = watsonMessageService.sendMessage(messageRequest);
-        String s = watsonResponse.toString();
-        return new MessageResponse(messageRequest.getRequestId(), s);
+    @ApiOperation(tags = {WATSON_TAG}, value = "Send message to Watson")
+    @AaReq
+    public MessageResponse sendMessage(@RequestBody @Valid MessageRequest request) {
+
+        super.beforeProcess(request);
+
+        var watsonResponse = watsonMessageService.sendMessage(request);
+        var response = new MessageResponse(request.getRequestId(), watsonResponse.toString());
+
+        super.afterProcess(request, response);
+
+        return response;
     }
 }

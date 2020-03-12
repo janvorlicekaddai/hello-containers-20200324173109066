@@ -1,4 +1,4 @@
-package cz.addai.controller.request;
+package cz.addai.web.model.request;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import io.swagger.annotations.ApiModelProperty;

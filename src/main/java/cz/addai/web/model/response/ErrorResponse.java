@@ -1,4 +1,4 @@
-package cz.addai.controller.response;
+package cz.addai.web.model.response;
 
 import io.swagger.annotations.ApiModel;
 import org.hibernate.validator.constraints.Length;

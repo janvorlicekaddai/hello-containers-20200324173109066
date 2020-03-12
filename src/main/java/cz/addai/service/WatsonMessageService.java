@@ -5,7 +5,7 @@ import com.ibm.cloud.sdk.core.http.Response;
 import com.ibm.watson.assistant.v2.Assistant;
 import com.ibm.watson.assistant.v2.model.*;
 import cz.addai.components.AdamConfig;
-import cz.addai.controller.request.MessageRequest;
+import cz.addai.web.model.request.MessageRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -33,9 +33,9 @@ public class WatsonMessageService extends AbstractWatsonService {
             assert userSession.hasSession();
         }
 
-        logger.debug("Sending message to Watson");
+        logger.debug("Sending message to Watson: {}", messageRequest.getText());
 
-        var messageContext = userSession.getMessageContext();
+        var messageContext = userSession.getWatsonMessageContext();
         populateMessageContext(messageContext);
 
         var inputOptions = new MessageInputOptions.Builder()
@@ -68,7 +68,9 @@ public class WatsonMessageService extends AbstractWatsonService {
         var result = response.getResult();
         messageContext = result.getContext();
         populateMessageContext(messageContext);
-        userSession.setMessageContext(messageContext);
+        userSession.setWatsonMessageContext(messageContext);
+
+        logger.debug("Watson responded {}", result.getOutput());
 
         return result;
     }
