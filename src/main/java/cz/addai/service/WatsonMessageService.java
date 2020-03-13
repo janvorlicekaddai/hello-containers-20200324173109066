@@ -4,7 +4,7 @@ import com.ibm.cloud.sdk.core.http.HttpStatus;
 import com.ibm.cloud.sdk.core.http.Response;
 import com.ibm.watson.assistant.v2.Assistant;
 import com.ibm.watson.assistant.v2.model.*;
-import cz.addai.components.AdamConfig;
+import cz.addai.components.session.UserSession;
 import cz.addai.web.model.request.MessageRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,10 +16,7 @@ import javax.annotation.Resource;
 public class WatsonMessageService extends AbstractWatsonService {
 
     @Resource
-    private AdamConfig adamConfig;
-
-    @Resource
-    private Assistant assistantService;
+    private UserSession userSession;
 
     @Resource
     private WatsonSessionService sessionService;
@@ -27,15 +24,18 @@ public class WatsonMessageService extends AbstractWatsonService {
     private Logger logger = LoggerFactory.getLogger(WatsonMessageService.class);
 
     public MessageResponse sendMessage(MessageRequest messageRequest) {
-        if (!userSession.hasSession()) {
+
+        if (userSession.getWatsonData() == null) {
             logger.debug("Request to send message but there is no session. Creating session");
             sessionService.openSession();
-            assert userSession.hasSession();
+            assert userSession.getWatsonData() != null;
         }
 
         logger.debug("Sending message to Watson: {}", messageRequest.getText());
 
-        var messageContext = userSession.getWatsonMessageContext();
+        var watsonData = userSession.getWatsonData();
+
+        var messageContext = watsonData.getMessageContext();
         populateMessageContext(messageContext);
 
         var inputOptions = new MessageInputOptions.Builder()
@@ -48,14 +48,14 @@ public class WatsonMessageService extends AbstractWatsonService {
                 .build();
 
         var options = new MessageOptions.Builder()
-                .assistantId(adamConfig.getWatsonAssistantId())
-                .sessionId(userSession.getWatsonSessionToken())
+                .assistantId(userSession.getClient().getWatsonAssistantId())
+                .sessionId(watsonData.getWatsonSessionToken())
                 .context(messageContext)
                 .input(input)
                 .build();
 
         // Call the service
-        var serviceCall = assistantService.message(options);
+        var serviceCall = watsonData.getAssistantService().message(options);
         var response = serviceCall.execute();
 
         // OK?
@@ -68,7 +68,7 @@ public class WatsonMessageService extends AbstractWatsonService {
         var result = response.getResult();
         messageContext = result.getContext();
         populateMessageContext(messageContext);
-        userSession.setWatsonMessageContext(messageContext);
+        watsonData.setMessageContext(messageContext);
 
         logger.debug("Watson responded {}", result.getOutput());
 

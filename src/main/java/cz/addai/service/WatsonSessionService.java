@@ -2,11 +2,11 @@ package cz.addai.service;
 
 import com.ibm.cloud.sdk.core.http.HttpStatus;
 import com.ibm.cloud.sdk.core.http.Response;
-import com.ibm.watson.assistant.v2.Assistant;
 import com.ibm.watson.assistant.v2.model.CreateSessionOptions;
 import com.ibm.watson.assistant.v2.model.DeleteSessionOptions;
 import com.ibm.watson.assistant.v2.model.SessionResponse;
-import cz.addai.components.AdamConfig;
+import cz.addai.components.session.UserSession;
+import cz.addai.watson.WatsonAssistantFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -17,23 +17,27 @@ import javax.annotation.Resource;
 public class WatsonSessionService extends AbstractWatsonService {
 
     @Resource
-    private AdamConfig adamConfig;
-
-    @Resource
-    private Assistant assistantService;
+    private UserSession userSession;
 
     private Logger logger = LoggerFactory.getLogger(WatsonSessionService.class);
 
     public void openSession() {
-        if (userSession.hasSession()) {
-            logger.debug("Request to open new Watson session but there is already one: {}. Ignore.", userSession.getWatsonSessionToken());
+        if (userSession.getWatsonData() != null && userSession.getWatsonData().hasSession()) {
+            logger.debug("Request to open new Watson session but there is already one: {}. Ignore.",
+                    userSession.getWatsonData().getWatsonSessionToken());
             return;
         }
 
+        if (userSession.getWatsonData() == null) {
+            var watsonAssistantFactory = new WatsonAssistantFactory(userSession);
+            watsonAssistantFactory.decorate();
+        }
+        var watsonData = userSession.getWatsonData();
+
         var options = new CreateSessionOptions.Builder()
-                .assistantId(adamConfig.getWatsonAssistantId())
+                .assistantId(userSession.getClient().getWatsonAssistantId())
                 .build();
-        var serviceCall = assistantService.createSession(options);
+        var serviceCall = watsonData.getAssistantService().createSession(options);
         var response = serviceCall.execute();
 
         if (response.getStatusCode() != HttpStatus.CREATED) {
@@ -44,17 +48,19 @@ public class WatsonSessionService extends AbstractWatsonService {
     }
 
     public void deleteSession() {
-        if (!userSession.hasSession()) {
+        if (userSession.getWatsonData() == null || !userSession.getWatsonData().hasSession()) {
             logger.debug("Request to delete Watson session but there is no session opened. Ignore.");
             return;
         }
 
+        var watsonData = userSession.getWatsonData();
+
         var options = new DeleteSessionOptions.Builder()
-                .assistantId(adamConfig.getWatsonAssistantId())
-                .sessionId(userSession.getWatsonSessionToken())
+                .assistantId(userSession.getClient().getWatsonAssistantId())
+                .sessionId(watsonData.getWatsonSessionToken())
                 .build();
 
-        var serviceCall = assistantService.deleteSession(options);
+        var serviceCall = watsonData.getAssistantService().deleteSession(options);
         var response = serviceCall.execute();
 
         if (response.getStatusCode() != HttpStatus.OK) {
@@ -69,7 +75,7 @@ public class WatsonSessionService extends AbstractWatsonService {
     private void createSessionSuccess(Response<SessionResponse> response) {
         SessionResponse sessionResponse = response.getResult();
         logger.debug("New Watson session opened. Token: {}", sessionResponse.getSessionId());
-        userSession.setWatsonSessionToken(sessionResponse.getSessionId());
+        userSession.getWatsonData().setWatsonSessionToken(sessionResponse.getSessionId());
     }
 
     private void createSessionErrorResponse(Response<SessionResponse> response) {
@@ -81,7 +87,7 @@ public class WatsonSessionService extends AbstractWatsonService {
 
     private void deleteSessionSuccess() {
         logger.debug("Watson session was deleted.");
-        userSession.deleteSession();
+        userSession.deleteWatsonData();
     }
 
     private void deleteSessionErrorResponse(Response<Void> response) {

@@ -9,30 +9,70 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Table(name = "client")
 public class Client implements Serializable {
 
-    private Long id;
+    @Id
+    @Column(name = "id", unique = true, nullable = false)
+    private String id;
+
+    @Column(name = "name")
     private String name;
 
+    @Column(name = "watson_apikey")
+    private String watsonApiKey;
 
-    @Id
-    @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "id", unique = true, nullable = false)
-    public Long getId() {
+    @Column(name = "watson_assistant_id")
+    private String watsonAssistantId;
+
+    @Column(name = "watson_url")
+    private String watsonUrl;
+
+    @Column(name = "watson_version")
+    private String watsonVersion;
+
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    /**
-     * @return the survey name.
-     */
-    @Column(name = "name")
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getWatsonApiKey() {
+        return watsonApiKey;
+    }
+
+    public void setWatsonApiKey(String watsonApiKey) {
+        this.watsonApiKey = watsonApiKey;
+    }
+
+    public String getWatsonAssistantId() {
+        return watsonAssistantId;
+    }
+
+    public void setWatsonAssistantId(String watsonAssistantId) {
+        this.watsonAssistantId = watsonAssistantId;
+    }
+
+    public String getWatsonUrl() {
+        return watsonUrl;
+    }
+
+    public void setWatsonUrl(String watsonUrl) {
+        this.watsonUrl = watsonUrl;
+    }
+
+    public String getWatsonVersion() {
+        return watsonVersion;
+    }
+
+    public void setWatsonVersion(String watsonVersion) {
+        this.watsonVersion = watsonVersion;
     }
 }

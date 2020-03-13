@@ -1,8 +1,9 @@
 package cz.addai.web.interceptor;
 
 import cz.addai.aspect.IRequestResponseInterceptor;
-import cz.addai.aspect.RequestResponseAspect;
-import cz.addai.components.UserSession;
+import cz.addai.components.session.UserSession;
+import cz.addai.persistence.domain.Client;
+import cz.addai.service.ClientService;
 import cz.addai.web.model.request.AbstractRequest;
 import cz.addai.web.model.response.AbstractResponse;
 import org.slf4j.Logger;
@@ -20,7 +21,10 @@ public class CollectRequestDataInterceptor implements IRequestResponseIntercepto
     private Logger logger = LoggerFactory.getLogger(CollectRequestDataInterceptor.class);
 
     @Resource
-    protected UserSession userSession;
+    private UserSession userSession;
+
+    @Resource
+    private ClientService clientService;
 
     @Override
     public void beforeHandler(AbstractRequest request) {
@@ -33,6 +37,13 @@ public class CollectRequestDataInterceptor implements IRequestResponseIntercepto
         String clientId = request.getClientId();
         userSession.setClientId(clientId);
 
+        // Client
+        Client client = clientService.getClient(clientId);
+        if (client == null) {
+            throw new EInvalidClientIdException(clientId);
+        }
+        userSession.setClient(client);
+
         logSessionData();
     }
 
@@ -44,6 +55,8 @@ public class CollectRequestDataInterceptor implements IRequestResponseIntercepto
     private void logSessionData() {
         logger.debug("Session parameters:");
         logger.debug("   clientId: " + userSession.getClientId());
-        logger.debug("   watsonSessionToken: " + userSession.getWatsonSessionToken());
+        if (userSession.getWatsonData() != null) {
+            logger.debug("   watsonSessionToken: " + userSession.getWatsonData().getWatsonSessionToken());
+        }
     }
 }

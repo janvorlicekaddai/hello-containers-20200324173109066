@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <!--
+        ==============================================================================================================
+        Creating initial version of tables
+        ==============================================================================================================
+    -->
+    <!--
+        Client
+    -->
+    <changeSet id="1" author="radek">
+        <createTable tableName="client">
+            <column name="id" type="varchar(100)" autoIncrement="false">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(150)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="watson_apikey" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="watson_assistant_id" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="watson_url" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="watson_version" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <insert tableName="client">
+            <column name="id" value="b91f1380-01e6-42e6-b530-1cd21be1fe58"/>
+            <column name="name" value="Air Bank"/>
+            <column name="watson_apikey" value="P018elr013sFstrKO6Xwm9KRmddHGsMDBX70uOP4Xndi"/>
+            <column name="watson_assistant_id" value="e5b4c9a9-4bf8-418e-bfbf-bf1333384b57"/>
+            <column name="watson_url" value="https://api.eu-gb.assistant.watson.cloud.ibm.com"/>
+            <column name="watson_version" value="2019-04-30"/>
+        </insert>
+
+    </changeSet>
+
+</databaseChangeLog>

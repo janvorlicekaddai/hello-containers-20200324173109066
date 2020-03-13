@@ -129,15 +129,15 @@ public class AdamConfig implements InitializingBean {
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Watson
 
-    public String getWatsonUrl() {
-        return getProperty("watson.url");
-    }
-
-    public String getWatsonAssistantId() {
-        return getProperty("watson.assistantId");
-    }
-
-    public String getWatsonApiKey() {
-        return getProperty("watson.apiKey");
-    }
+//    public String getWatsonUrl() {
+//        return getProperty("watson.url");
+//    }
+//
+//    public String getWatsonAssistantId() {
+//        return getProperty("watson.assistantId");
+//    }
+//
+//    public String getWatsonApiKey() {
+//        return getProperty("watson.apiKey");
+//    }
 }

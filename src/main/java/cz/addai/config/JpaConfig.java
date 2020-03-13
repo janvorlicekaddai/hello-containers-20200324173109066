@@ -1,8 +1,10 @@
 package cz.addai.config;
 
 import cz.addai.components.AdamConfig;
+import liquibase.integration.spring.SpringLiquibase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -19,6 +21,7 @@ public class JpaConfig {
     private AdamConfig adamConfig;
 
     @Bean
+    @Primary
     public DataSource dataSource(){
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(adamConfig.getJdbcDriver());
@@ -43,9 +46,17 @@ public class JpaConfig {
         return em;
     }
 
+    @Bean
+    public SpringLiquibase liquibase() {
+        SpringLiquibase liquibase = new SpringLiquibase();
+        liquibase.setChangeLog("classpath:liquibase-changeLog.xml");
+        liquibase.setDataSource(dataSource());
+        return liquibase;
+    }
+
     Properties additionalProperties() {
         Properties properties = new Properties();
-        properties.setProperty("hibernate.hbm2ddl.auto", "create-drop");
+        properties.setProperty("hibernate.hbm2ddl.auto", "none");
         properties.setProperty("hibernate.dialect", adamConfig.getHibernateDialect());
 
         return properties;
