@@ -2,7 +2,6 @@ package cz.addai.service;
 
 import com.ibm.cloud.sdk.core.http.HttpStatus;
 import com.ibm.cloud.sdk.core.http.Response;
-import com.ibm.watson.assistant.v2.Assistant;
 import com.ibm.watson.assistant.v2.model.*;
 import cz.addai.components.session.UserSession;
 import cz.addai.web.model.request.MessageRequest;
@@ -11,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.time.ZonedDateTime;
 
 @Service
 public class WatsonMessageService extends AbstractWatsonService {
@@ -21,10 +21,14 @@ public class WatsonMessageService extends AbstractWatsonService {
     @Resource
     private WatsonSessionService sessionService;
 
+    @Resource
+    private WatsonAnswerLogService answerLogService;
+
     private Logger logger = LoggerFactory.getLogger(WatsonMessageService.class);
 
-    public MessageResponse sendMessage(MessageRequest messageRequest) {
 
+
+    public MessageResponse sendMessage(MessageRequest messageRequest) {
         if (userSession.getWatsonData() == null) {
             logger.debug("Request to send message but there is no session. Creating session");
             sessionService.openSession();
@@ -55,6 +59,7 @@ public class WatsonMessageService extends AbstractWatsonService {
                 .build();
 
         // Call the service
+        var askedAt = ZonedDateTime.now();
         var serviceCall = watsonData.getAssistantService().message(options);
         var response = serviceCall.execute();
 
@@ -62,6 +67,7 @@ public class WatsonMessageService extends AbstractWatsonService {
         if (response.getStatusCode() != HttpStatus.OK) {
             // Throws an exception
             createSessionErrorResponse(response);
+            assert false;
         }
 
         // Save context to session
@@ -71,6 +77,7 @@ public class WatsonMessageService extends AbstractWatsonService {
         watsonData.setMessageContext(messageContext);
 
         logger.debug("Watson responded {}", result.getOutput());
+        answerLogService.logAnswer(askedAt, messageRequest.getText(), result);
 
         return result;
     }
@@ -93,5 +100,4 @@ public class WatsonMessageService extends AbstractWatsonService {
                 .userDefined()
                 .putIfAbsent("App", "Mobile");
     }
-
 }

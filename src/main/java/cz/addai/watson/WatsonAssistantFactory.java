@@ -9,7 +9,7 @@ import cz.addai.components.session.WatsonData;
 import cz.addai.persistence.domain.Client;
 
 /**
- * Decorate UserSession with Watson assistant
+ * Decorate UserSession with Watson assistant service
  */
 public class WatsonAssistantFactory {
 

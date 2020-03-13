@@ -10,7 +10,7 @@ public abstract class AbstractJpaDao<K extends Serializable, T extends Serializa
     private Class<T> clazz;
 
     @PersistenceContext
-    EntityManager entityManager;
+    private EntityManager entityManager;
 
     public void setClazz(Class<T> clazzToSet) {
         this.clazz = clazzToSet;
@@ -34,6 +34,7 @@ public abstract class AbstractJpaDao<K extends Serializable, T extends Serializa
 
     public void create(T entity) {
         entityManager.persist(entity);
+        entityManager.flush();
     }
 
     public void delete(T entity){

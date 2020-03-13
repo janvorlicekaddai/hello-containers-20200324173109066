@@ -7,6 +7,9 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
+    <property name="uuid.type" value="varchar(100)"/>
+    <property name="json.type" value="text"/>
+
     <!--
         ==============================================================================================================
         Creating initial version of tables
@@ -17,16 +20,16 @@
     -->
     <changeSet id="1" author="radek">
         <createTable tableName="client">
-            <column name="id" type="varchar(100)" autoIncrement="false">
+            <column name="id" type="${uuid.type}" autoIncrement="false">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="name" type="varchar(150)">
+            <column name="name" type="${uuid.type}">
                 <constraints nullable="false"/>
             </column>
             <column name="watson_apikey" type="varchar(100)">
                 <constraints nullable="false"/>
             </column>
-            <column name="watson_assistant_id" type="varchar(100)">
+            <column name="watson_assistant_id" type="${uuid.type}">
                 <constraints nullable="false"/>
             </column>
             <column name="watson_url" type="varchar(200)">
@@ -46,6 +49,99 @@
             <column name="watson_version" value="2019-04-30"/>
         </insert>
 
+        <!--
+            Answer log
+        -->
+        <createTable tableName="answer_log">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="client_id" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="asked_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="responded_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="question" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="response" type="text">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="intent" type="varchar(250)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="intent_confidence" type="double precision">
+                <constraints nullable="true"/>
+            </column>
+            <column name="intents" type="${json.type}">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="entities" type="${json.type}">
+                <constraints nullable="true"/>
+            </column>
+            <column name="options" type="${json.type}">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="full_data" type="${json.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!--
+            Answer log
+        -->
+        <createTable tableName="recipient">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <insert tableName="recipient">
+            <column name="name" value="Filip Novák"/>
+        </insert>
+        <insert tableName="recipient">
+            <column name="name" value="Filip Zavřel"/>
+        </insert>
+        <insert tableName="recipient">
+            <column name="name" value="Fin.úřad hl. m. Praha"/>
+        </insert>
+        <insert tableName="recipient">
+            <column name="name" value="Jindřich Chromý"/>
+        </insert>
+        <insert tableName="recipient">
+            <column name="name" value="Jiří Suchý"/>
+        </insert>
+        <insert tableName="recipient">
+            <column name="name" value="Lukáš Winter"/>
+        </insert>
+        <insert tableName="recipient">
+            <column name="name" value="Magda Steig."/>
+        </insert>
+        <insert tableName="recipient">
+            <column name="name" value="Mamka"/>
+        </insert>
+        <insert tableName="recipient">
+            <column name="name" value="Miláček"/>
+        </insert>
+        <insert tableName="recipient">
+            <column name="name" value="Táta"/>
+        </insert>
+        <insert tableName="recipient">
+            <column name="name" value="Tomáš Jindra"/>
+        </insert>
     </changeSet>
 
 </databaseChangeLog>
