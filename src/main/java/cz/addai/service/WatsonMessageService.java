@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.time.ZonedDateTime;
+import java.util.Map;
 
 @Service
 public class WatsonMessageService extends AbstractWatsonService {
@@ -39,8 +40,7 @@ public class WatsonMessageService extends AbstractWatsonService {
 
         var watsonData = userSession.getWatsonData();
 
-        var messageContext = watsonData.getMessageContext();
-        populateMessageContext(messageContext);
+        var messageContext = getOrCreateMessageContext();
 
         var inputOptions = new MessageInputOptions.Builder()
                 .returnContext(true)
@@ -83,6 +83,30 @@ public class WatsonMessageService extends AbstractWatsonService {
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    private MessageContext getOrCreateMessageContext() {
+        var watsonData = userSession.getWatsonData();
+        MessageContext messageContext = null;
+        if (watsonData != null) {
+            messageContext = watsonData.getMessageContext();
+        }
+        if (messageContext == null) {
+            var skills = new MessageContextSkills();
+            skills.put(
+                    "main skill",
+                    new MessageContextSkill.Builder()
+                            .userDefined(Map.of("App", "Mobile"))
+                            .build()
+            );
+
+            messageContext = new MessageContext.Builder()
+                    .skills(skills)
+                    .build();
+        } else {
+            populateMessageContext(messageContext);
+        }
+        return messageContext;
+    }
 
     private void createSessionErrorResponse(Response<MessageResponse> response) {
         String errorMessage = "Message failed. Returned status "
