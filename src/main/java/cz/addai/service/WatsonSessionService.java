@@ -61,12 +61,18 @@ public class WatsonSessionService extends AbstractWatsonService {
                 .build();
 
         var serviceCall = watsonData.getAssistantService().deleteSession(options);
-        var response = serviceCall.execute();
+        try {
+            var response = serviceCall.execute();
 
-        if (response.getStatusCode() != HttpStatus.OK) {
-            deleteSessionErrorResponse(response);
-        } else {
-            deleteSessionSuccess();
+            if (response.getStatusCode() != HttpStatus.OK) {
+                deleteSessionErrorResponse(response);
+            } else {
+                deleteSessionSuccess();
+            }
+        } catch (RuntimeException ex) {
+            logger.error("Error deleting session", ex);
+            userSession.deleteWatsonData();
+            throw ex;
         }
     }
 

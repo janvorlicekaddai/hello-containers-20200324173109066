@@ -1,8 +1,6 @@
 package cz.addai.components.session;
 
-import com.ibm.watson.assistant.v2.model.MessageContext;
 import cz.addai.persistence.domain.Client;
-import cz.addai.service.WatsonMessageService;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
@@ -26,6 +24,7 @@ public class UserSession implements Serializable {
     // Required client
     private Client client;
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public String getRequestId() {
         return requestId;

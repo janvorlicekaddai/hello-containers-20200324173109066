@@ -1,12 +1,11 @@
 package cz.addai.watson;
 
 import com.ibm.cloud.sdk.core.util.GsonSingleton;
-import com.ibm.watson.assistant.v2.model.MessageResponse;
-import com.ibm.watson.assistant.v2.model.RuntimeEntity;
-import com.ibm.watson.assistant.v2.model.RuntimeIntent;
-import com.ibm.watson.assistant.v2.model.RuntimeResponseGeneric;
+import com.ibm.watson.assistant.v2.model.*;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Wrapper around MessageResponse
@@ -18,8 +17,16 @@ public class MessageResponseHelper {
 
     private final MessageResponse messageResponse;
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     public MessageResponseHelper(MessageResponse messageResponse) {
         this.messageResponse = messageResponse;
+    }
+
+    /////////////////////////////////////////////////
+
+    public MessageResponse getMessageResponse() {
+        return messageResponse;
     }
 
     public List<RuntimeResponseGeneric> getGeneric() {
@@ -95,5 +102,42 @@ public class MessageResponseHelper {
             return null;
         }
         return GsonSingleton.getGson().toJson(options.options());
+    }
+
+//    public List<DialogNodeAction> getActions() {
+//        return messageResponse.getOutput().getActions();
+//    }
+
+    public List<Map<String,Object>> getUserDefinedActions() {
+        var userDefined = messageResponse.getOutput().getUserDefined();
+        if (userDefined == null || userDefined.isEmpty()) {
+            return null;
+        }
+        return (List) userDefined.get("actions");
+    }
+
+    public Map<String,Object> getUserDefinedAction(String actionName) {
+        List<Map<String,Object>> actions = getUserDefinedActions();
+        if (actions == null || actions.isEmpty()) {
+            return null;
+        }
+        return actions.stream().filter(a-> a.get("name").equals(actionName)).findAny().orElse(null);
+    }
+
+//    public Map<String,Object> getAction(String actionName) {
+//        return getUserDefinedAction(actionName);
+//    }
+
+//    public RuntimeEntity getEntity(String entityName) {
+//        var entities = getEntities();
+//        if (entities == null || entities.isEmpty()) {
+//            return null;
+//        }
+//        return entities.stream().filter(e->e.entity().equals(entityName)).findAny().orElse(null);
+//    }
+
+    public String[] getTextsBetweenDoubleQuotes() {
+        String text = getTextResponse();
+        return StringUtils.substringsBetween(text , "\"", "\"");
     }
 }

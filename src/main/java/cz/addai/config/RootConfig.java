@@ -8,7 +8,7 @@ import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import org.springframework.context.annotation.*;
 
 @Configuration
-@ComponentScan(basePackages = {"cz.addai.components", "cz.addai.service", "cz.addai.persistence.dao"})
+@ComponentScan(basePackages = {"cz.addai.components", "cz.addai.service", "cz.addai.persistence.dao", "cz.addai.watson"})
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @Import({JpaConfig.class})
 @PropertySources({

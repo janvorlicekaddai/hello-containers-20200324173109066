@@ -10,7 +10,7 @@ public abstract class AbstractJpaDao<K extends Serializable, T extends Serializa
     private Class<T> clazz;
 
     @PersistenceContext
-    private EntityManager entityManager;
+    protected EntityManager entityManager;
 
     public void setClazz(Class<T> clazzToSet) {
         this.clazz = clazzToSet;
@@ -19,6 +19,7 @@ public abstract class AbstractJpaDao<K extends Serializable, T extends Serializa
     public T findOne(K id){
         return entityManager.find(clazz, id);
     }
+
     public List<T> findAll(){
         return entityManager.createQuery("from " + clazz.getName())
                 .getResultList();

@@ -1,7 +1,7 @@
 package cz.addai.web.controller.client;
 
 import cz.addai.aspect.AaReq;
-import cz.addai.service.WatsonMessageService;
+import cz.addai.service.WatsonDialogService;
 import cz.addai.service.WatsonSessionService;
 import cz.addai.web.controller.AbstractController;
 import cz.addai.web.model.request.MessageRequest;
@@ -24,7 +24,7 @@ public class ApiClientController extends AbstractController {
     private WatsonSessionService watsonSessionService;
 
     @Resource
-    private WatsonMessageService watsonMessageService;
+    private WatsonDialogService watsonDialogService;
 
     @RequestMapping(
             value="/public/v1/deleteSession",
@@ -46,7 +46,7 @@ public class ApiClientController extends AbstractController {
 
         super.beforeProcess(request);
 
-        var watsonResponse = watsonMessageService.sendMessage(request);
+        var watsonResponse = watsonDialogService.sendMessage(request);
         var response = new MessageResponse(request.getRequestId(), watsonResponse.toString());
 
         super.afterProcess(request, response);

@@ -4,50 +4,57 @@ import com.ibm.cloud.sdk.core.http.HttpStatus;
 import com.ibm.cloud.sdk.core.http.Response;
 import com.ibm.watson.assistant.v2.model.*;
 import cz.addai.components.session.UserSession;
-import cz.addai.web.model.request.MessageRequest;
+import cz.addai.watson.sm.StateMachine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.time.ZonedDateTime;
-import java.util.Map;
 
 @Service
-public class WatsonMessageService extends AbstractWatsonService {
+public class WatsonMessageService {
 
     @Resource
     private UserSession userSession;
 
     @Resource
-    private WatsonSessionService sessionService;
+    private WatsonAnswerLogService answerLogService;
 
     @Resource
-    private WatsonAnswerLogService answerLogService;
+    private StateMachine stateMachine;
 
     private Logger logger = LoggerFactory.getLogger(WatsonMessageService.class);
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    public MessageResponse sendMessage(MessageContext messageContext, String text) {
 
-    public MessageResponse sendMessage(MessageRequest messageRequest) {
-        if (userSession.getWatsonData() == null) {
-            logger.debug("Request to send message but there is no session. Creating session");
-            sessionService.openSession();
-            assert userSession.getWatsonData() != null;
-        }
+        var askedAt = ZonedDateTime.now();
 
-        logger.debug("Sending message to Watson: {}", messageRequest.getText());
+        var result = sendMessageInternal(messageContext, text);
+
+        // Handle states
+        result = stateMachine.handleState(result);
+
+        logger.debug("Watson responded {}", result.getOutput());
+        answerLogService.logAnswer(askedAt, text, result);
+
+        return result;
+    }
+
+    public MessageResponse sendMessageInternal(MessageContext messageContext, String text) {
+
+        logger.debug("Sending message to Watson: {}", text);
 
         var watsonData = userSession.getWatsonData();
-
-        var messageContext = getOrCreateMessageContext();
 
         var inputOptions = new MessageInputOptions.Builder()
                 .returnContext(true)
                 .build();
 
         var input = new MessageInput.Builder()
-                .text(messageRequest.getText())
+                .text(text)
                 .options(inputOptions)
                 .build();
 
@@ -59,54 +66,27 @@ public class WatsonMessageService extends AbstractWatsonService {
                 .build();
 
         // Call the service
-        var askedAt = ZonedDateTime.now();
         var serviceCall = watsonData.getAssistantService().message(options);
-        var response = serviceCall.execute();
+        try {
+            var response = serviceCall.execute();
 
-        // OK?
-        if (response.getStatusCode() != HttpStatus.OK) {
-            // Throws an exception
-            createSessionErrorResponse(response);
-            assert false;
+            // OK?
+            if (response.getStatusCode() != HttpStatus.OK) {
+                // Throws an exception
+                createSessionErrorResponse(response);
+                assert false;
+            }
+
+            // Save context to session
+            return response.getResult();
+        } catch (RuntimeException ex) {
+            logger.error("Error sending message", ex);
+            userSession.deleteWatsonData();
+            throw ex;
         }
-
-        // Save context to session
-        var result = response.getResult();
-        messageContext = result.getContext();
-        populateMessageContext(messageContext);
-        watsonData.setMessageContext(messageContext);
-
-        logger.debug("Watson responded {}", result.getOutput());
-        answerLogService.logAnswer(askedAt, messageRequest.getText(), result);
-
-        return result;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    private MessageContext getOrCreateMessageContext() {
-        var watsonData = userSession.getWatsonData();
-        MessageContext messageContext = null;
-        if (watsonData != null) {
-            messageContext = watsonData.getMessageContext();
-        }
-        if (messageContext == null) {
-            var skills = new MessageContextSkills();
-            skills.put(
-                    "main skill",
-                    new MessageContextSkill.Builder()
-                            .userDefined(Map.of("App", "Mobile"))
-                            .build()
-            );
-
-            messageContext = new MessageContext.Builder()
-                    .skills(skills)
-                    .build();
-        } else {
-            populateMessageContext(messageContext);
-        }
-        return messageContext;
-    }
 
     private void createSessionErrorResponse(Response<MessageResponse> response) {
         String errorMessage = "Message failed. Returned status "
@@ -115,13 +95,4 @@ public class WatsonMessageService extends AbstractWatsonService {
         throw new AdamServiceException(errorMessage);
     }
 
-    private void populateMessageContext(MessageContext messageContext) {
-        if (messageContext == null) {
-            return;
-        }
-        messageContext.skills()
-                .get("main skill")
-                .userDefined()
-                .putIfAbsent("App", "Mobile");
-    }
 }

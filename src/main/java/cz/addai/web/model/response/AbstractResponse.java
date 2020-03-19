@@ -7,20 +7,11 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.ZonedDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class AbstractResponse {
 
-    /**
-     * OK constructor
-     */
-    public AbstractResponse(@NotNull @NotBlank @Length(min = 36, max = 36) String requestId) {
-        this.timestamp = ZonedDateTime.now();
-        this.requestId = requestId;
-        this.success = true;
-    }
-
-
-    // Response time
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd'T'HH:mm:ss.SSSZ")
     @ApiModelProperty(
             value = "Response time including time zone",
@@ -45,6 +36,22 @@ public abstract class AbstractResponse {
             dataType = "java.lang.Boolean")
     private boolean success;
 
+    @ApiModelProperty("Optional - additional info like list of recepients, etc")
+    private final Map<String, Object> additionalInfo = new HashMap<>();
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * OK constructor
+     */
+    public AbstractResponse(@NotNull @NotBlank @Length(min = 36, max = 36) String requestId) {
+        this.timestamp = ZonedDateTime.now();
+        this.requestId = requestId;
+        this.success = true;
+    }
+
+    /////////////////////////////////////////////
+
     public ZonedDateTime getTimestamp() {
         return timestamp;
     }
@@ -56,4 +63,13 @@ public abstract class AbstractResponse {
     public boolean isSuccess() {
         return success;
     }
+
+    public Map<String, Object> getAdditionalInfo() {
+        return additionalInfo;
+    }
+
+    public void addAdditionalInfo(String name, Object value) {
+        additionalInfo.put(name, value);
+    }
+
 }

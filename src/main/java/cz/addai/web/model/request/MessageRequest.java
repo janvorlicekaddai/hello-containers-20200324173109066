@@ -12,6 +12,6 @@ public class MessageRequest extends AbstractRequest {
     }
 
     public void setText(String text) {
-        this.text = text;
+        this.text = text.trim();
     }
 }
