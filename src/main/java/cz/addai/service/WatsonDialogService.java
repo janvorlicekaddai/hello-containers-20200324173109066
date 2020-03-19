@@ -3,6 +3,8 @@ package cz.addai.service;
 import com.ibm.cloud.sdk.core.http.Response;
 import com.ibm.watson.assistant.v2.model.*;
 import cz.addai.components.session.UserSession;
+import cz.addai.watson.MessageResponseHelper;
+import cz.addai.watson.transform.OutputTextTransformer;
 import cz.addai.web.model.request.MessageRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +23,7 @@ public class WatsonDialogService extends AbstractWatsonService {
     private WatsonSessionService sessionService;
 
     @Resource
-    private WatsonAnswerLogService answerLogService;
+    private OutputTextTransformer outputTextTransformer;
 
     @Resource
     private WatsonMessageService watsonMessageService;
@@ -43,8 +45,10 @@ public class WatsonDialogService extends AbstractWatsonService {
         var result = watsonMessageService.sendMessage(messageContext, messageRequest.getText());
 
         messageContext = result.getContext();
-        //populateMessageContext(messageContext);
         userSession.getWatsonData().setMessageContext(messageContext);
+
+        MessageResponseHelper messageResponseHelper = new MessageResponseHelper(result);
+        outputTextTransformer.transform(messageResponseHelper.getTextResponses());
 
         return result;
     }

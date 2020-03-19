@@ -14,6 +14,8 @@ public class AbstractController {
     public static final String CLIENT_TAG = "Client app";
 
     public static final String POTENTIAL_RECIPIENTS_ATT_NAME = "potentialRecipients";
+    public static final String AUDIO_TEXT_ATT_NAME = "audioTexts";
+    public static final String SSML_ATT_NAME = "ssml";
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -32,6 +34,14 @@ public class AbstractController {
         // Potential recipients
         if (additionalResponseData.getPotentialRecipients() != null) {
             abstractResponse.addAdditionalInfo(POTENTIAL_RECIPIENTS_ATT_NAME, additionalResponseData.getPotentialRecipients());
+        }
+        // Audiotexts
+        if (additionalResponseData.getAudioTexts() != null) {
+            abstractResponse.addAdditionalInfo(AUDIO_TEXT_ATT_NAME, additionalResponseData.getAudioTexts());
+        }
+        // SSML
+        if (additionalResponseData.getSsmlTexts() != null) {
+            abstractResponse.addAdditionalInfo(SSML_ATT_NAME, additionalResponseData.getSsmlTexts());
         }
     }
 }

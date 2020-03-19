@@ -78,6 +78,7 @@ public class WatsonMessageService {
             }
 
             // Save context to session
+            logger.debug("Received message from Watson: {}", response.getResult());
             return response.getResult();
         } catch (RuntimeException ex) {
             logger.error("Error sending message", ex);

@@ -4,8 +4,10 @@ import com.ibm.cloud.sdk.core.util.GsonSingleton;
 import com.ibm.watson.assistant.v2.model.*;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Wrapper around MessageResponse
@@ -33,17 +35,28 @@ public class MessageResponseHelper {
         return messageResponse.getOutput().getGeneric();
     }
 
+    public List<String> getTextResponses() {
+        List<RuntimeResponseGeneric> generics = getGeneric();
+        if (generics == null || generics.isEmpty()) {
+            return List.of("");
+        }
+
+        return generics.stream()
+                .filter(g-> g.responseType().equals(RESPONSE_TYPE_TEXT))
+                .map(RuntimeResponseGeneric::text)
+                .collect(Collectors.toList());
+    }
+
     public String getTextResponse() {
         List<RuntimeResponseGeneric> generics = getGeneric();
         if (generics == null || generics.isEmpty()) {
             return "";
         }
 
+        // Join all texts into one
         return generics.stream()
                 .filter(g-> g.responseType().equals(RESPONSE_TYPE_TEXT))
-                .findAny()
-                .map(RuntimeResponseGeneric::text)
-                .orElse("");
+                .map(RuntimeResponseGeneric::text).collect(Collectors.joining(" "));
     }
 
     public RuntimeResponseGeneric getOptions() {
@@ -113,6 +126,7 @@ public class MessageResponseHelper {
         if (userDefined == null || userDefined.isEmpty()) {
             return null;
         }
+        // TODO: fix me
         return (List) userDefined.get("actions");
     }
 
