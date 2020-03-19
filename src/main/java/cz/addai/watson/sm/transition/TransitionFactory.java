@@ -25,8 +25,8 @@ public class TransitionFactory {
         return new CheckRecipientTransition(recipientEntityValue, recipientDao);
     }
 
-    public ITransition createUnknownRecipientTransition() {
-        return new UnknownRecipientTransition();
+    public ITransition createUnknownRecipientTransition(MessageResponse messageResponse) {
+        return new UnknownRecipientTransition(watsonMessageService, messageResponse);
     }
 
     public ITransition createRecipientOkTransition(MessageResponse messageResponse, Recipient recipient) {

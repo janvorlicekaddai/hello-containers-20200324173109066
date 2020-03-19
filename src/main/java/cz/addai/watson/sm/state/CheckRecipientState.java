@@ -35,7 +35,7 @@ public class CheckRecipientState extends AbstractState {
     @Override
     public ITransition createTransition(MessageResponseHelper messageResponseHelper) {
         if (recipients.isEmpty()) {
-            return transitionFactory.createUnknownRecipientTransition();
+            return transitionFactory.createUnknownRecipientTransition(messageResponseHelper.getMessageResponse());
         }
         if (recipients.size() == 1) {
             return transitionFactory.createRecipientOkTransition(messageResponseHelper.getMessageResponse(), recipients.get(0));

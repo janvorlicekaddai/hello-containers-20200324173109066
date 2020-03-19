@@ -11,10 +11,16 @@ import java.util.List;
 
 public class AmbiguousRecipientTransition implements ITransition {
 
+    private static final String AMBIGUOUS_RECIPIENT_MESSAGE = "MoreRecipientsControlAddAI";
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     private final WatsonMessageService watsonMessageService;
     private final List<Recipient> recipients;
 
     private MessageResponse messageResponse;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public AmbiguousRecipientTransition(
             WatsonMessageService watsonMessageService,
@@ -25,11 +31,13 @@ public class AmbiguousRecipientTransition implements ITransition {
         this.messageResponse = messageResponse;
     }
 
+    /////////////////////////////////////////////////////
+
     @Override
     public IState transit(IState source) {
         messageResponse = watsonMessageService.sendMessageInternal(
                 messageResponse.getContext(),
-                "MoreRecipientsControlAddAI");
+                AMBIGUOUS_RECIPIENT_MESSAGE);
 
         return new AmbiguousRecipientState(messageResponse, source.getTransitionFactory(), recipients);
     }

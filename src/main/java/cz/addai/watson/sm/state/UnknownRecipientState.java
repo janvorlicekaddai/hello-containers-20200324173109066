@@ -6,10 +6,16 @@ import cz.addai.watson.MessageResponseHelper;
 import cz.addai.watson.sm.ITransition;
 import cz.addai.watson.sm.transition.TransitionFactory;
 
+
 public class UnknownRecipientState extends AbstractState {
 
-    protected UnknownRecipientState(TransitionFactory transitionFactory) {
+    private final MessageResponse messageResponse;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public UnknownRecipientState(MessageResponse messageResponse, TransitionFactory transitionFactory) {
         super(transitionFactory);
+        this.messageResponse = messageResponse;
     }
 
     @Override
@@ -19,11 +25,15 @@ public class UnknownRecipientState extends AbstractState {
 
     @Override
     public MessageResponse askUser(AdditionalResponseData additionalResponseData) {
-        return null;
+        return messageResponse;
     }
 
     @Override
     public ITransition createTransition(MessageResponseHelper messageResponseHelper) {
+        if (hasCheckRecipientAction(messageResponseHelper)) {
+            return createCheckRecipientTransition(messageResponseHelper);
+        }
+
         return null;
     }
 }

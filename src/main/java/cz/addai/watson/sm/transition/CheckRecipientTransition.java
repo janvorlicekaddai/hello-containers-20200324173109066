@@ -38,7 +38,11 @@ public class CheckRecipientTransition implements ITransition {
         } else {
             recipients = recipientDao.findMatch(recipientEntityValue);
         }
-        logger.debug("Found recipients: {}", recipients.stream().map(Recipient::getName).collect(Collectors.joining(",")));
+        if (recipients.isEmpty()) {
+            logger.debug("Found NO recipient");
+        } else {
+            logger.debug("Found recipients: {}", recipients.stream().map(Recipient::getName).collect(Collectors.joining(",")));
+        }
 
         return new CheckRecipientState(source.getTransitionFactory(), recipients);
     }

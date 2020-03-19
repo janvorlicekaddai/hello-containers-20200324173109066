@@ -31,7 +31,6 @@ public class AmbiguousRecipientState extends AbstractState {
 
     @Override
     public ITransition createTransition(MessageResponseHelper messageResponseHelper) {
-
         if (hasCheckRecipientAction(messageResponseHelper)) {
             return createCheckRecipientTransition(messageResponseHelper);
         }
