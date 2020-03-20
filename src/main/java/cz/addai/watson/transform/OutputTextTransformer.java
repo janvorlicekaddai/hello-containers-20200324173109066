@@ -24,7 +24,7 @@ public class OutputTextTransformer {
         List<String> audioTexts = audioTextTransformer.transform(texts);
         additionalResponseData.setAudioTexts(audioTexts);
 
-        List<String> ssmlText = ssmlTransformer.transform(texts);
+        List<String> ssmlText = ssmlTransformer.transform(audioTexts);
         additionalResponseData.setSsmlTexts(ssmlText);
     }
 }
